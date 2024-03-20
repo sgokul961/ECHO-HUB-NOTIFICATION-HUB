@@ -28,6 +28,7 @@ type NotificationServiceClient interface {
 	SendFollowedNotification(ctx context.Context, in *FollowedNotification, opts ...grpc.CallOption) (*NotificationResponse, error)
 	// Method to send a notification message to Kafka topic
 	SendKafkaNotification(ctx context.Context, in *KafkaNotification, opts ...grpc.CallOption) (*NotificationResponse, error)
+	SendLikeNotification(ctx context.Context, in *LikeNotification, opts ...grpc.CallOption) (*NotificationResponse, error)
 }
 
 type notificationServiceClient struct {
@@ -65,6 +66,15 @@ func (c *notificationServiceClient) SendKafkaNotification(ctx context.Context, i
 	return out, nil
 }
 
+func (c *notificationServiceClient) SendLikeNotification(ctx context.Context, in *LikeNotification, opts ...grpc.CallOption) (*NotificationResponse, error) {
+	out := new(NotificationResponse)
+	err := c.cc.Invoke(ctx, "/notification.NotificationService/SendLikeNotification", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NotificationServiceServer is the server API for NotificationService service.
 // All implementations must embed UnimplementedNotificationServiceServer
 // for forward compatibility
@@ -75,6 +85,7 @@ type NotificationServiceServer interface {
 	SendFollowedNotification(context.Context, *FollowedNotification) (*NotificationResponse, error)
 	// Method to send a notification message to Kafka topic
 	SendKafkaNotification(context.Context, *KafkaNotification) (*NotificationResponse, error)
+	SendLikeNotification(context.Context, *LikeNotification) (*NotificationResponse, error)
 	mustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -90,6 +101,9 @@ func (UnimplementedNotificationServiceServer) SendFollowedNotification(context.C
 }
 func (UnimplementedNotificationServiceServer) SendKafkaNotification(context.Context, *KafkaNotification) (*NotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendKafkaNotification not implemented")
+}
+func (UnimplementedNotificationServiceServer) SendLikeNotification(context.Context, *LikeNotification) (*NotificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendLikeNotification not implemented")
 }
 func (UnimplementedNotificationServiceServer) mustEmbedUnimplementedNotificationServiceServer() {}
 
@@ -158,6 +172,24 @@ func _NotificationService_SendKafkaNotification_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NotificationService_SendLikeNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LikeNotification)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).SendLikeNotification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.NotificationService/SendLikeNotification",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).SendLikeNotification(ctx, req.(*LikeNotification))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NotificationService_ServiceDesc is the grpc.ServiceDesc for NotificationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +208,10 @@ var NotificationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendKafkaNotification",
 			Handler:    _NotificationService_SendKafkaNotification_Handler,
+		},
+		{
+			MethodName: "SendLikeNotification",
+			Handler:    _NotificationService_SendLikeNotification_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

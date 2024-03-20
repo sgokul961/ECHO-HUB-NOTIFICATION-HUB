@@ -20,7 +20,6 @@ func Init(c config.Config) (*gorm.DB, error) {
 		log.Fatalln(err)
 
 	}
-	db.AutoMigrate(&domain.Notification{})
-
+	db.AutoMigrate(domain.LikeNotification{})
 	return db, err
 }

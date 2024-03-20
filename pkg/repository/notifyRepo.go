@@ -15,12 +15,15 @@ func NewNotificationRepo(db *gorm.DB) interfaceR.NotifyRepoInterface {
 		DB: db,
 	}
 }
-func (r *NotificationDataBase) AddNotification(notification domain.Notification) (int64, error) {
+func (r *NotificationDataBase) AddNotification(notification domain.LikeNotification) (int64, error) {
+	// Write the SQL query using a prepared statement
+	query := `INSERT INTO like_notifications (user_id, message, post_id) VALUES (?, ?, ?)`
 
-	err := r.DB.Create(&notification).Error
+	// Execute the SQL query with the provided values
+	err := r.DB.Exec(query, notification.UserID, notification.Message, notification.PostID).Error
 	if err != nil {
-		// Handle error
 		return 0, err
 	}
-	return notification.ID, nil
+
+	return notification.UserID, nil
 }

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"log"
 	"net"
 
@@ -25,13 +24,10 @@ func NewServerHttp(handler *handler.NotificationHandler) *ServerHTTP {
 }
 func (s *ServerHTTP) Start(c config.Config) {
 	lis, err := net.Listen("tcp", c.Port)
-	fmt.Println("lis ", lis)
 	if err != nil {
 		log.Fatalln("error loading server", err)
 	}
-	defer func() {
-		fmt.Println("err ", err)
-	}()
+
 	if err = s.engine.Serve(lis); err != nil {
 		log.Fatalln("failed to serve", err)
 	}

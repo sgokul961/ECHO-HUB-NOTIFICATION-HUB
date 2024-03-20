@@ -6,8 +6,8 @@ type NotificationType string
 
 const (
 	CommentNotification NotificationType = "comment"
-	LikeNotification    NotificationType = "like"
-	FollowNotification  NotificationType = "follow"
+	//LikeNotification    NotificationType = "like"
+	FollowNotification NotificationType = "follow"
 	// Add more notification types as needed
 )
 
@@ -22,4 +22,11 @@ type Notification struct {
 	Seen             bool             `json:"seen" gorm:"default:false"`
 	CreatedAt        time.Time        `json:"created_at"`
 	UpdatedAt        time.Time        `json:"updated_at"`
+}
+
+type LikeNotification struct {
+	ID      int64  `json:"id" gorm:"primaryKey"`
+	UserID  int64  `json:"user_id"`
+	Message string `json:"message"`
+	PostID  int64  `json:"post_id"`
 }

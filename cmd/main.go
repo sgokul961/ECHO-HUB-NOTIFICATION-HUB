@@ -14,7 +14,12 @@ func main() {
 	if err != nil {
 		log.Fatalln("failed to load config:", err)
 	}
+	//calling kafka consumer
+
 	go helper.StartKafkaConsumer()
+
+	//go helper.StartLikeKafkaConsumer()
+
 	// Initialize API server
 	server, err := wire.InitApi(c)
 	if err != nil {

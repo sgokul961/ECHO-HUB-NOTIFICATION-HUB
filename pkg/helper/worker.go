@@ -75,12 +75,6 @@ func StartKafkaConsumer() {
 		panic(err)
 	}
 
-	// // Obtain the partition IDs for the given topic
-	// partitions, err := worker.Partitions(topic)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 	partitionConsumer, err := worker.ConsumePartition(topic, 0, sarama.OffsetOldest)
 	if err != nil {
 		panic(err)
@@ -90,19 +84,6 @@ func StartKafkaConsumer() {
 	signchan := make(chan os.Signal, 1)
 	signal.Notify(signchan, syscall.SIGINT, syscall.SIGTERM)
 	messagecount := 0
-
-	//errors := make(chan error)
-
-	// // Consume messages from each partition
-	// for _, partition := range partitions {
-	// 	go consumePartition(worker, topic, partition, errors)
-	// }
-	// select {
-	// case err := <-errors:
-	// 	fmt.Println("Error:", err)
-	// case <-signchan:
-	// 	fmt.Println("Received interrupt signal")
-	// }
 
 	go func() {
 		for {
@@ -114,12 +95,12 @@ func StartKafkaConsumer() {
 				fmt.Printf("received message count: %d | Topic: %s | Message: %s\n", messagecount, string(msg.Topic), string(msg.Value))
 			case <-signchan:
 				fmt.Println("interruption detected")
-				donech <- struct{}{}
+				donechan <- struct{}{}
 			}
 		}
 	}()
 
-	<-donech
+	<-donechan
 
 	fmt.Println("processed", messagecount, "messages")
 	if err := worker.Close(); err != nil {
@@ -127,7 +108,7 @@ func StartKafkaConsumer() {
 	}
 }
 
-var donech = make(chan struct{})
+var donechan = make(chan struct{})
 
 func connectConsumer(brokerUrl []string) (sarama.Consumer, error) {
 	config := sarama.NewConfig()
@@ -140,23 +121,3 @@ func connectConsumer(brokerUrl []string) (sarama.Consumer, error) {
 	}
 	return conn, nil
 }
-
-// func consumePartition(worker sarama.Consumer, topic string, partition int32, errors chan<- error) {
-// 	// Set the offset to the earliest available offset
-// 	partitionConsumer, err := worker.ConsumePartition(topic, partition, sarama.OffsetOldest)
-// 	if err != nil {
-// 		errors <- err
-// 		return
-// 	}
-
-// 	// Consume messages from the partition
-// 	for msg := range partitionConsumer.Messages() {
-// 		fmt.Printf("Topic: %s, Partition: %d, Offset: %d, Key: %s, Value: %s\n",
-// 			msg.Topic, msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
-// 	}
-
-// 	// Close the partition consumer
-// 	if err := partitionConsumer.Close(); err != nil {
-// 		errors <- err
-// 	}
-// }

@@ -1,7 +1,9 @@
 package NotifyusecaseinterfaceU
 
-import "github.com/sgokul961/echo-hub-notification-svc/pkg/domain"
+import (
+	"github.com/sgokul961/echo-hub-notification-svc/pkg/models"
+)
 
 type NotifyUsecaseInterface interface {
-	AddCommentNotification(notification domain.Notification) (int64, error)
+	AddLikeNotification(notification models.LikeNotification) (int64, error)
 }
