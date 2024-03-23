@@ -18,8 +18,6 @@ func main() {
 
 	go helper.StartKafkaConsumer()
 
-	//go helper.StartLikeKafkaConsumer()
-
 	// Initialize API server
 	server, err := wire.InitApi(c)
 	if err != nil {

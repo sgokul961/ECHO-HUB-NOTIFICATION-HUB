@@ -6,4 +6,5 @@ import (
 
 type NotifyUsecaseInterface interface {
 	AddLikeNotification(notification models.LikeNotification) (int64, error)
+	ConsumeMessage() (models.LikeNotification, error)
 }

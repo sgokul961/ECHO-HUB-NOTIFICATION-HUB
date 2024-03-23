@@ -70,7 +70,7 @@ func StartKafkaConsumer() {
 	brokerUrl := []string{"localhost:9092"}
 	// Use the same Kafka broker URL as the producer
 
-	worker, err := connectConsumer(brokerUrl)
+	worker, err := ConnectConsumer(brokerUrl)
 	if err != nil {
 		panic(err)
 	}
@@ -110,7 +110,7 @@ func StartKafkaConsumer() {
 
 var donechan = make(chan struct{})
 
-func connectConsumer(brokerUrl []string) (sarama.Consumer, error) {
+func ConnectConsumer(brokerUrl []string) (sarama.Consumer, error) {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 

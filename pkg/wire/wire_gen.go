@@ -11,6 +11,7 @@ import (
 	"github.com/sgokul961/echo-hub-notification-svc/pkg/api/handler"
 	"github.com/sgokul961/echo-hub-notification-svc/pkg/config"
 	"github.com/sgokul961/echo-hub-notification-svc/pkg/db"
+	"github.com/sgokul961/echo-hub-notification-svc/pkg/postClient"
 	"github.com/sgokul961/echo-hub-notification-svc/pkg/repository"
 	"github.com/sgokul961/echo-hub-notification-svc/pkg/usecase"
 )
@@ -23,7 +24,8 @@ func InitApi(cfg config.Config) (*api.ServerHTTP, error) {
 		return nil, err
 	}
 	notifyRepoInterface := repository.NewNotificationRepo(gormDB)
-	notifyUsecaseInterface := usecase.NewUserUserUseCase(notifyRepoInterface)
+	postServiceClient := postclient.NewPostServiceClient(cfg)
+	notifyUsecaseInterface := usecase.NewUserUserUseCase(notifyRepoInterface, postServiceClient)
 	notificationHandler := handler.NewNotificationHandler(notifyUsecaseInterface)
 	serverHTTP := api.NewServerHttp(notificationHandler)
 	return serverHTTP, nil
