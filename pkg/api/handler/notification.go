@@ -68,28 +68,60 @@ func (n *NotificationHandler) SendLikeNotification(ctx context.Context, notify *
 // 	}
 // }
 
-func (n *NotificationHandler) ConsumeKafkaMessages(empty *pb.Empty, stream pb.NotificationService_ConsumeKafkaMessagesServer) error {
-	// Consume Kafka messages using the NotifyUseCase method
-	for {
-		kafkaMessage, err := n.notifyUsecase.ConsumeMessage()
-		if err != nil {
-			// Handle error
-			return err
-		}
+// func (n *NotificationHandler) ConsumeKafkaMessages(empty *pb.Empty, stream pb.NotificationService_ConsumeKafkaMessagesServer) error {
+// 	// Consume Kafka messages using the NotifyUseCase method
+// 	for {
+// 		kafkaMessage, err := n.notifyUsecase.ConsumeMessage()
+// 		if err != nil {
+// 			// Handle error
+// 			return err
+// 		}
 
-		// Create a NotificationMessage instance from the Kafka message
-		notification := &pb.NotificationMessage{
-			PostId:  kafkaMessage.PostID,
-			UserId:  kafkaMessage.UserID,
-			Message: kafkaMessage.Message,
-		}
+// 		// Create a NotificationMessage instance from the Kafka message
+// 		notification := &pb.NotificationMessage{
+// 			PostId:  kafkaMessage.PostID,
+// 			UserId:  kafkaMessage.UserID,
+// 			Message: kafkaMessage.Message,
+// 		}
 
-		//Send the NotificationMessage to the client stream
-		if err := stream.Send(notification); err != nil {
-			// Handle error
-			return err
-		}
+// 		//Send the NotificationMessage to the client stream
+// 		if err := stream.Send(notification); err != nil {
+// 			// Handle error
+// 			return err
+// 		}
 
+// 	}
+
+// }
+func (n *NotificationHandler) ConsumeKafkaCommentMessages(ctx context.Context, p *pb.ConsumeKafkaCommentMessagesRequest) (*pb.ConsumeKafkaCommentMessagesResponse, error) {
+
+	res, err := n.notifyUsecase.ConsumeCommentMessage(p.UserId)
+
+	if err != nil {
+		return &pb.ConsumeKafkaCommentMessagesResponse{}, err
 	}
+
+	return &pb.ConsumeKafkaCommentMessagesResponse{
+		UserId:  res.UserID,
+		PostId:  res.PostID,
+		Message: res.Message,
+		Content: res.Content,
+	}, nil
+
+}
+
+func (n *NotificationHandler) ConsumeKafkaLikeMessages(ctx context.Context, p *pb.ConsumeKafkaLikeMessagesRequest) (*pb.ConsumeKafkaLikeMessagesResponse, error) {
+
+	response, err := n.notifyUsecase.ConsumeMessage(p.UserId)
+
+	if err != nil {
+		return &pb.ConsumeKafkaLikeMessagesResponse{}, err
+	}
+	return &pb.ConsumeKafkaLikeMessagesResponse{
+		UserId:  response.UserID,
+		PostId:  response.PostID,
+		Message: response.Message,
+		Content: response.Content,
+	}, nil
 
 }
