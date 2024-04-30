@@ -172,7 +172,7 @@ func (u *NotifyUseCase) ConsumeCommentMessage(user_id int64) (models.CommentNoti
 	ch := make(chan models.CommentNotification, 1) // Buffered channel to avoid goroutine leak
 
 	// Define Kafka consumer parameters
-	brokerURL := []string{"localhost:9092"}
+	brokerURL := []string{"kafka:9092"}
 	topic := "comment_notifications"
 
 	// Connect to Kafka broker
@@ -232,7 +232,7 @@ func (u *NotifyUseCase) ConsumeMessage(user_id int64) (models.LikeNotification, 
 	ch := make(chan models.LikeNotification, 1)
 
 	// Define Kafka consumer parameters
-	brokerURL := []string{"localhost:9092"}
+	brokerURL := []string{"kafka:9092"}
 	topic := "like_notification"
 
 	// Connect to Kafka broker
